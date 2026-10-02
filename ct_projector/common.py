@@ -4,9 +4,7 @@ from itertools import product
 from typing import Sequence, Any
 import numpy as np
 from attrs import define, field
-from typing import NamedTuple
 
-from math import cos, sin
 from algebra import *
 
 def _validate_single_coordinates_vector(instance, attribute, value:np.ndarray):
@@ -105,42 +103,11 @@ class Image:
         return -self.directions[1]
 
     def intersection_planes(self) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Returns planes that take origin at the XYZ coordinate of the origin corner of the image and going in the direction of the directions matrix
+        Returns:
+            Plane origin [1,3]
+            Plane normals [3, 3]
+        """
         first_point = matrix_transform(self.ijk_to_xyz_matrix, [-0.5,-0.5,-0.5])
         return first_point, self.directions.T
-
-def attr_from_list(attrib: str, array:Sequence[Any]) -> list[Any]:
-    return list(map(attrgetter(attrib), array))
-
-def unit_vector(v: np.ndarray):
-    if v.ndim == 2:
-        return v / np.linalg.norm(v, axis=1)
-    else:
-        return v / np.linalg.norm(v)
-
-
-# @attrs.frozen()
-# class Line:
-#     # TODO : Validate shape for all
-#     x0:np.ndarray
-#     x1:np.ndarray
-    
-#     @cached_property
-#     def direction(self) -> np.ndarray:
-#         return unit_vector(self.x1 - self.x0)
-
-#     @cached_property
-#     def length(self) -> float:
-#         return np.linalg.norm(self.x1 - self.x0)
-    
-#     @cached_property
-#     def vector(self) -> np.ndarray:
-#         return self.x1 - self.x0
-
-#     def middle_points(self, ts:np.ndarray) -> np.ndarray:
-#         ts = np.asarray(ts, float)
-#         return self.x0[None, ...] + self.vector * ts[..., None]
-
-# @attrs.frozen()
-# class Plane:
-#     x0:np.ndarray
-#     normal:np.ndarray  # validate is unit vector
