@@ -1,11 +1,10 @@
-from operator import attrgetter
 from functools import cached_property
 from itertools import product
-from typing import Sequence, Any
-import numpy as np
-from attrs import define, field
 
-from algebra import *
+from attrs import define, field
+import numpy as np
+
+from .algebra import *
 
 def _validate_single_coordinates_vector(instance, attribute, value:np.ndarray):
     if value.shape != (3,):

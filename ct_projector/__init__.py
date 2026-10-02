@@ -1,2 +1,2 @@
 from ct_projector.ct_projector import CtProjector
-from common import Image
+from ct_projector.common import Image

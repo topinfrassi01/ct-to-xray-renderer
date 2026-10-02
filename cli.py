@@ -9,20 +9,19 @@ from ct_projector import CtProjector, Image
 
 def main():
     arg_parser = ArgumentParser("Renders an X-ray image from a CT ")
-    arg_parser.add_argument("path", type=Path, required=True, help="Path to the CT scan. Refer to SimpleITK.ImageFileReader for valid inputs")
+    arg_parser.add_argument("path", type=Path, help="Path to the CT scan. Refer to SimpleITK.ImageFileReader for valid inputs")
     arg_parser.add_argument("--source-to-detector-distance", type=float, default=500.0, help="Distance between the origin of the UVN frame and the back of the CT scan")
-    arg_parser.add_argument("--pitch", type=float, default=0.0, help="Pitch rotation to apply to the UVN frame")
-    arg_parser.add_argument("--yaw", type=float, default=0.0, help="Yaw rotation to apply to the UVN frame")
-    arg_parser.add_argument("--roll", type=float, default=0.0, help="Roll rotation to apply to the UVN frame")
+    arg_parser.add_argument("--pitch", type=float, default=0.0, help="Pitch (U) rotation to apply to the UVN frame")
+    arg_parser.add_argument("--yaw", type=float, default=0.0, help="Yaw (V) rotation to apply to the UVN frame")
+    arg_parser.add_argument("--roll", type=float, default=0.0, help="Roll (N) rotation to apply to the UVN frame")
     arg_parser.add_argument("--pixel-resolution", type=float, default=1.0, help="Pixel resolution for the output")
-    arg_parser.add_argument("--image-size", nargs=2, type=int, help="Final image size (w,h)")
+    arg_parser.add_argument("--image-size", nargs=2, type=int, default=(256,256), help="Final image size (h,w)")
     arg_parser.add_argument("--output", type=Path, help="Path to the output X-ray image")
     args = arg_parser.parse_args()
     reader = sitk.ImageFileReader()
     reader.SetFileName(args.path)
     
     itk_img:sitk.Image = reader.Execute()
-    size = itk_img.GetSize()
     directions = np.reshape(itk_img.GetDirection(), (3,3))
 
     image = Image(
@@ -42,6 +41,10 @@ def main():
         args.pixel_resolution,
         args.image_size)
     
-    sitk.WriteImage(image, args.output)
+    sitk_img = sitk.GetImageFromArray(image)
+    sitk_img.SetOrigin([0.0,0.0])
+    sitk_img.SetSpacing([args.pixel_resolution, args.pixel_resolution])
+
+    sitk.WriteImage(sitk_img, args.output)
 if __name__ == "__main__":
     main()

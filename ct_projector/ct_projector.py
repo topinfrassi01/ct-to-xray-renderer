@@ -1,9 +1,11 @@
+from itertools import product
 from math import pi
 
-from common import Image
-from algebra import *
+from .common import Image
+from .algebra import *
 
 import numpy as np
+
 
 class CtProjector:
     def __init__(
@@ -43,21 +45,44 @@ class CtProjector:
         pixel_resolution:float,
         image_size:tuple[int,int]
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        half_w = image_size[0] // 2
-        half_h = image_size[1] // 2
-        arr_w = np.arange(-half_w, half_w)
+        half_h = image_size[0] // 2
+        half_w = image_size[1] // 2
         arr_h = np.arange(-half_h, half_h)
+        arr_w = np.arange(-half_w, half_w)
 
-        x_values, y_values = np.meshgrid(arr_w, arr_h)
-        pixels_3d = np.vstack([x_values.reshape(-1), y_values.reshape(-1), np.zeros(len(x_values)*len(y_values))]).T
+        pixels_3d = np.array(list(product(arr_h, arr_w)), dtype=np.float64)[:,::-1]
+        pixels_3d = np.hstack((pixels_3d, np.zeros((len(arr_w)*len(arr_h), 1))))
         pixels_3d *= pixel_resolution
-
         converted = matrix_transform(np.linalg.inv(uvn_frame), self._image.xyz_corners)
 
         points = unit_vector_projection(np.array([0,0,1], dtype=float), converted)
         dist = np.max(points[:,2])
         
         pixels_3d = matrix_transform(uvn_frame, pixels_3d + [0,0,dist])
+        # import pyvista as pv
+        # import trimesh
+        # image_coord_system = np.eye(4)
+        # image_coord_system[:3,:3] = self._image.directions
+        # image_coord_system[:3,3] = self._image.xyz_center
+        # coordinate_system:pv.PolyData = pv.wrap(pv.from_trimesh(trimesh.creation.axis(transform=image_coord_system, axis_length=400.0, axis_radius=5.0)))
+        # coordinate_system2:pv.PolyData = pv.wrap(pv.from_trimesh(trimesh.creation.axis(transform=uvn_frame, axis_length=400.0, axis_radius=5.0)))
+        # pl=pv.Plotter()
+        # #grid = pv.ImageData()
+        # #grid.dimensions = self._image.ct_array.shape[::-1]
+        # #grid.spacing = self._image.spacing
+        # #grid.origin = self._image.xyz_center
+        # #grid.point_data["Scalars"] = self._image.ct_array.transpose(2,1,0).flatten()
+
+        # #pl.add_volume(grid, scalars="Scalars", cmap='bone', opacity="sigmoid", show_scalar_bar=False)
+        # pl.add_mesh(coordinate_system2, color="blue")
+        # pl.add_mesh(coordinate_system, color="red")
+        # pl.add_points(self._image.xyz_corners, color="red")
+        # pd = pv.PolyData(pixels_3d)
+        # pd["scalars"]=np.arange(len(pixels_3d))
+        # pl.add_points(pd, scalars="scalars", cmap="turbo")
+        
+        # pl.show()
+        # exit()
         
         line_directions = pixels_3d - uvn_frame[:3, 3]
         line_lengths = np.linalg.norm(line_directions, axis=1, keepdims=True)

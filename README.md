@@ -1,5 +1,7 @@
 You can find information on this code here :
 
+But basically, we do X-ray rendering from CT scans using the exact radiological path as formulated by [Siddon et al.](https://www2.physik.uni-muenchen.de/lehre/vorlesungen/wise_23_24/Vorlesung_-Computational-methods-in-medical-physics/Material/_auth/Siddon1985RadiologicalPath.pdf)
+
 You should know this code uses only CPU. While I've vectorized all operations, it is still pretty slow. I'd like to use pycuda at some point to make it faster, but I'm not sure I'll get there.
 
 ## Installing
