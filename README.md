@@ -1,5 +1,7 @@
 You can find information on this code here :
 
+You should know this code uses only CPU. While I've vectorized all operations, it is still pretty slow. I'd like to use pycuda at some point to make it faster, but I'm not sure I'll get there.
+
 ## Installing
 
 You need CMake in order to pip install numba, apart from that you should be able to simply install the requirements

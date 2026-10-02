@@ -4,7 +4,6 @@ from common import Image
 from algebra import *
 
 import numpy as np
-from numba import jit
 
 class CtProjector:
     def __init__(
