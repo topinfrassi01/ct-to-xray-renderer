@@ -1,4 +1,4 @@
-You can find information on this code here :
+You can find information on this code here : https://medium.com/@francis.toupin/rendering-x-ray-images-from-ct-scans-934b30b75490?postPublishedType=initial
 
 But basically, we do X-ray rendering from CT scans using the exact radiological path as formulated by [Siddon et al.](https://www2.physik.uni-muenchen.de/lehre/vorlesungen/wise_23_24/Vorlesung_-Computational-methods-in-medical-physics/Material/_auth/Siddon1985RadiologicalPath.pdf)
 
